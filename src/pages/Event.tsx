@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 
 import { Header } from '../components/Header'
 import { Sidebar } from '../components/Sidebar'
@@ -12,7 +12,11 @@ export function Event() {
       <Header />
 
       <main className="flex flex-1">
-        {slug ? <Video lessonSlug={slug} /> : <div className="flex-1" />}
+        {slug ? (
+          <Video lessonSlug={slug} />
+        ) : (
+          <Navigate to={'/event/lesson/abertura-do-evento-ignite-lab'} />
+        )}
 
         <Sidebar />
       </main>
