@@ -1,35 +1,89 @@
-import { DiscordLogo, Lightning } from 'phosphor-react'
+import { gql, useQuery } from '@apollo/client'
+import { DefaultUi, Player, Youtube } from '@vime/react'
+import { CaretRight, DiscordLogo, FileArrowDown, Lightning } from 'phosphor-react'
 
-export function Video() {
+import { Footer } from './Footer'
+
+import '@vime/core/themes/default.css'
+import { Spinner } from './Spinner'
+
+const GET_LESSON_BY_SLUG_QUERY = gql`
+  query GetLessonBySlug($slug: String) {
+    lesson(where: { slug: $slug }) {
+      title
+      videoId
+      description
+      teacher {
+        name
+        bio
+        avatarURL
+      }
+    }
+  }
+`
+
+type GetLessonBySlugResponse = {
+  lesson: {
+    title: string
+    videoId: string
+    description: string
+    teacher: {
+      name: string
+      bio: string
+      avatarURL: string
+    }
+  }
+}
+
+interface VideoProps {
+  lessonSlug: string
+}
+
+export function Video({ lessonSlug }: VideoProps) {
+  const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+    variables: {
+      slug: lessonSlug,
+    },
+  })
+
+  if (!data) {
+    return <Spinner />
+  }
+
   return (
     <div className="flex-1">
       <div className="flex justify-center bg-black">
-        <div className="aspect-video h-full max-h-[60vh] w-full max-w-[1100px] bg-slate-900"></div>
+        <div className="aspect-video h-full max-h-[60vh] w-full max-w-[1100px] bg-slate-900">
+          <Player>
+            <Youtube videoId={data.lesson.videoId} />
+            <DefaultUi />
+          </Player>
+        </div>
       </div>
 
       <div className="mx-auto max-w-[1100px] p-8">
         <div className="flex items-start gap-16">
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">Aula 01 - Abertura do Ignite Lab</h1>
+            <h1 className="text-2xl font-bold">{data.lesson.title}</h1>
 
             <p className="mt-4 leading-relaxed text-gray-200">
-              Nessa aula vamos dar início ao projeto criando a estrutura base da aplicação
-              utilizando ReactJS, Vite e TailwindCSS. Vamos também realizar o setup do
-              nosso projeto no GraphCMS criando as entidades da aplicação e integrando a
-              API GraphQL gerada pela plataforma no nosso front-end utilizando Apollo
-              Client.
+              {data.lesson.description}
             </p>
 
             <div className="mt-6 flex items-center gap-4">
               <img
                 className="h-16 w-16 rounded-full border-2 border-blue-500"
-                src="https://github.com/GuiLous.png"
+                src={data.lesson.teacher.avatarURL}
                 alt=""
               />
 
               <div className="leading-relaxed">
-                <strong className="block text-2xl font-bold">Guilherme Lourenço</strong>
-                <span className="block text-sm text-gray-200">Web Developer</span>
+                <strong className="block text-2xl font-bold">
+                  {data.lesson.teacher.name}
+                </strong>
+                <span className="block text-sm text-gray-200">
+                  {data.lesson.teacher.bio}
+                </span>
               </div>
             </div>
           </div>
@@ -52,6 +106,52 @@ export function Video() {
             </a>
           </div>
         </div>
+
+        <div className="mt-20 grid grid-cols-2 gap-8">
+          <a
+            href=""
+            className="flex items-stretch gap-6 overflow-hidden rounded bg-gray-700 transition-colors hover:bg-gray-600"
+          >
+            <div className="flex h-full items-center bg-green-700 p-6">
+              <FileArrowDown size={40} />
+            </div>
+
+            <div className="py-6 leading-relaxed">
+              <strong className="text-2xl">Material Complementar</strong>
+              <p className="mt-2 text-sm text-gray-200">
+                Acesse o material complementar para acelerar o seu desenvolvimento
+              </p>
+            </div>
+
+            <div className="flex h-full items-center p-6">
+              <CaretRight size={24} />
+            </div>
+          </a>
+
+          <a
+            href=""
+            className="flex items-stretch gap-6 overflow-hidden rounded bg-gray-700 transition-colors hover:bg-gray-600"
+          >
+            <div className="flex h-full items-center bg-green-700 p-6">
+              <FileArrowDown size={40} />
+            </div>
+
+            <div className="py-6 leading-relaxed">
+              <strong className="text-2xl">Wallpapers Exclusivos</strong>
+              <p className="mt-2 text-sm text-gray-200">
+                Baixe wallpapers exclusivos do Ignite Lav e personalize sua máquina
+              </p>
+            </div>
+
+            <div className="flex h-full items-center p-6">
+              <CaretRight size={24} />
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-[1100px] px-8 pt-12">
+        <Footer />
       </div>
     </div>
   )
