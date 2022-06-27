@@ -1,6 +1,6 @@
 # Event Platform ✨ - Ignite Lab 🧪
 
-![](https://imgur.com/a/lIapidw)
+![](https://i.imgur.com/cgl5KlP.png)
 
 <h4 align="center"> 
 	🚧  Projeto Finalizado 🚧
